@@ -1,61 +1,59 @@
-# 2026-mcm-SportsAnalytics
-# Formula 1 Race Strategy Decision Support System
+# Formula 1 Race Strategy Decision Support with Machine Learning and Monte Carlo Simulation
 
-This project is a machine learning based Formula 1 race strategy decision support system. The aim of the project is to analyse historical Formula 1 race data and support race strategy decisions such as whether a driver should stay out, pit now, wait a few laps, or change to another tyre compound. The system is built as a complete pipeline from data collection to final risk-aware strategy recommendation.
+A collaborative MSc research project that connects predictive models with race strategy decisions. The system estimates pace, disruption risk, pit behaviour and traffic effects, then compares candidate strategies through Monte Carlo simulation and a final recommendation layer. The research paper is titled “An Integrated Risk Aware Decision Support System for Formula 1 Race Strategy Using Machine Learning and Monte Carlo Simulation.”
 
-The data was collected using the FastF1 API and processed at lap level. Each row in the dataset represents one driver at one lap of a race. The collected data includes lap times, tyre compound, tyre age, stint details, pit stop information, driver position, gaps to other cars, weather data, safety car and virtual safety car information, race status, circuit information and driver/team details. After extraction, the data was cleaned, standardised and merged into a single master dataset.
+## The question
 
-The project is divided into six main models. Model 1 predicts lap time, expected pace, tyre degradation and uncertainty. Model 2 predicts future race interruptions such as Safety Car, Virtual Safety Car and Red Flag probabilities. Model 3 predicts pit stop probability and tyre compound choice. Model 4 models on-track interaction such as clean air, position changes, traffic and rejoin penalty. Model 5A estimates local pit and wait strategy costs, while Model 5B uses all previous model outputs to simulate different race strategy scenarios. Finally, Model 6 acts as the risk-aware recommendation layer and gives the final strategy decision.
+At a given race lap, should a driver stay out, pit now or delay a stop, and how does the recommendation change with uncertainty, track position, traffic and weather?
 
-The final master file used by the strategy simulator is:
+## Tools and methods
 
-`outputs/lap_level_with_model1_model2_model3_model4_FINAL_FOR_MODEL5.csv`
+Python, FastF1, pandas, scikit learn, XGBoost, Optuna, Monte Carlo simulation, Decision support.
 
-This file contains the original cleaned race data along with the generated outputs from Models 1 to 4. Model 5A also produces a strategy table:
+## Work in this repository
 
-`outputs/model5a_local_strategy_FINAL_strategy_table_20260609_101034.csv`
+1. Collected and integrated historical timing, tyre, weather, event and race context data from the 2019 to 2025 seasons.
+2. Developed six connected model stages: pace and degradation; disruption probabilities; pit and compound behaviour; traffic and rejoin effects; strategy simulation; and final recommendation.
+3. Used race based splitting in the modelling design so training and evaluation do not randomly mix laps from the same race.
+4. Compared stay out, pit and wait strategies under configurable scenarios, including neutralisation and wet conditions.
+5. Produced ranked strategies and reports that consider expected points, finishing position, outcome probabilities and downside risk.
 
-Model 5B uses these files to simulate possible race outcomes for different strategies. It compares options such as staying out, pitting now, waiting one lap, waiting three laps, waiting five laps and switching to Soft, Medium, Hard, Intermediate or Wet tyres. It also supports different scenarios such as base race conditions, Safety Car situations, no-neutralisation cases and rain/wet-track conditions.
+## Evidence and scope
 
-Model 6 is the final pipeline runner. When Model 6 is executed, it can automatically run Model 5B first, store the Model 5B simulation output, and then generate the final risk-aware recommendation. The recommendation considers expected finishing position, expected points, top 10 probability, top 5 probability, podium probability, win probability, downside risk, compound confidence and the driver’s race situation.
+| Measure | Recorded value |
+| --- | --- |
+| Committed master dataset | 154,606 driver lap rows |
+| Master dataset columns at this stage | 70 |
+| Races | 151 |
+| Driver identifiers | 39 |
+| Circuit identifiers | 34 |
+| Seasons | 2019 to 2025 |
+| Paper reported lap time MAE | 5.7465 seconds for the Ridge baseline; 1.0548 seconds for the final model |
+| Paper reported rejoin penalty MAE | 8.7578 seconds for the historical baseline; 3.4895 seconds for the final model |
 
-The final Model 6 output is saved in a separate run folder:
+## Repository guide
 
-`outputs/model6_runs/<race_driver_lap_scenario_risk_timestamp>/`
+| File or folder | Purpose |
+| --- | --- |
+| [build/Race Strategy Decision Support System for Formula 1/Dataset/lap_level_model_table_master.csv](https://github.com/divyansh2703/Formula1_Race_Strategy_Decision_Support_System/blob/main/build/Race%20Strategy%20Decision%20Support%20System%20for%20Formula%201/Dataset/lap_level_model_table_master.csv) | Master dataset audited for row and entity counts |
+| [build/Race Strategy Decision Support System for Formula 1/Documentation/Reseach Paper.pdf](https://github.com/divyansh2703/Formula1_Race_Strategy_Decision_Support_System/blob/main/build/Race%20Strategy%20Decision%20Support%20System%20for%20Formula%201/Documentation/Reseach%20Paper.pdf) | Research paper and reported evaluation results |
+| [build/Race Strategy Decision Support System for Formula 1/Data Collection and Cleaning/Readme.md](https://github.com/divyansh2703/Formula1_Race_Strategy_Decision_Support_System/blob/main/build/Race%20Strategy%20Decision%20Support%20System%20for%20Formula%201/Data%20Collection%20and%20Cleaning/Readme.md) | Data engineering documentation |
+| [build/Race Strategy Decision Support System for Formula 1/Model Building/README_MAIN.md](https://github.com/divyansh2703/Formula1_Race_Strategy_Decision_Support_System/blob/main/build/Race%20Strategy%20Decision%20Support%20System%20for%20Formula%201/Model%20Building/README_MAIN.md) | Model guide |
+| [build/Race Strategy Decision Support System for Formula 1/Model Building/Model 1 - Lap Time and Tyre Degradation Prediction/train_model1_run6FINAL.py](https://github.com/divyansh2703/Formula1_Race_Strategy_Decision_Support_System/blob/main/build/Race%20Strategy%20Decision%20Support%20System%20for%20Formula%201/Model%20Building/Model%201%20-%20Lap%20Time%20and%20Tyre%20Degradation%20Prediction/train_model1_run6FINAL.py) | Pace model training |
+| [build/Race Strategy Decision Support System for Formula 1/Model Building/Model 5 - Monte Carlo Strategy Simulation/run_model5b_scenario_simulator.py](https://github.com/divyansh2703/Formula1_Race_Strategy_Decision_Support_System/blob/main/build/Race%20Strategy%20Decision%20Support%20System%20for%20Formula%201/Model%20Building/Model%205%20-%20Monte%20Carlo%20Strategy%20Simulation/run_model5b_scenario_simulator.py) | Scenario simulator |
+| [build/Race Strategy Decision Support System for Formula 1/Model Building/Model 6 - Risk Aware Strategy Recommendation/run_model6.py](https://github.com/divyansh2703/Formula1_Race_Strategy_Decision_Support_System/blob/main/build/Race%20Strategy%20Decision%20Support%20System%20for%20Formula%201/Model%20Building/Model%206%20-%20Risk%20Aware%20Strategy%20Recommendation/run_model6.py) | Final recommendation runner |
 
-Each Model 6 run contains two main folders. The `model5b_run` folder stores the raw simulation output from Model 5B, including results, metrics, configuration and report files. The `model6_result` folder stores the final Model 6 recommendation, ranked strategies, JSON output, technical report, simple report and combined report.
+## Getting started
 
-The complete pipeline works in the following order:
+Start with the model guide and research paper. Scripts live in the nested model folders shown below; earlier documentation used several simplified filenames that are not the committed filenames. Review imports and local paths before building a dedicated environment.
 
-Data collection using FastF1
-Data cleaning and merging
-Model 1 pace and degradation prediction
-Model 2 race interruption probability prediction
-Model 3 pit and compound prediction
-Model 4 traffic and rejoin modelling
-Model 5A local strategy cost estimation
-Model 5B full scenario simulation
-Model 6 final risk-aware recommendation
+The recommendation runner requires the generated combined outputs from Models 1 to 4 and the Model 5A strategy table. These generated inputs are referenced by the code but are not included in the current public tree. The committed master dataset is an earlier stage and cannot be substituted without generating the required model outputs.
 
-The main scripts used in the project are:
-
-`train_model1_lap_time_degradation.py`
-`train_model2_run_final9.py`
-`train_model3a_pit_propensity.py`
-`train_model3b_compound_choice.py`
-`apply_model3c_wet_compound_handler.py`
-`train_model4a_clean_air.py`
-`train_model4b_position_delta.py`
-`train_model4c_rejoin_penalty.py`
-`run_model5a_local_strategy.py`
-`run_model5b_scenario_simulator.py`
-`run_model6.py`
-
-The final pipeline can be run using Model 6. Example command:
+The following command demonstrates the verified argument names and repository script paths. Run it only after generating the two `outputs/` inputs:
 
 ```bash
-python run_model6.py \
-  --model5b_script run_model5b_scenario_simulator.py \
+python "build/Race Strategy Decision Support System for Formula 1/Model Building/Model 6 - Risk Aware Strategy Recommendation/run_model6.py" \
+  --model5b_script "build/Race Strategy Decision Support System for Formula 1/Model Building/Model 5 - Monte Carlo Strategy Simulation/run_model5b_scenario_simulator.py" \
   --input_path outputs/lap_level_with_model1_model2_model3_model4_FINAL_FOR_MODEL5.csv \
   --model5a_strategy_table outputs/model5a_local_strategy_FINAL_strategy_table_20260609_101034.csv \
   --outputs_dir outputs \
@@ -69,6 +67,23 @@ python run_model6.py \
   --risk_appetite balanced
 ```
 
-The project prevents data leakage by using race-based train, validation and test splits instead of random lap-level splitting. Future race information is not used as an input when making predictions at a current lap. Each target is created using only the correct future horizon, while model features represent information available at the decision point.
+This is an example configuration, not a newly executed result.
 
-This project is designed as an academic machine learning research system for Formula 1 strategy. It combines predictive modelling, probabilistic simulation, baseline evaluation, risk-aware recommendation and real-world scenario validation. The final output helps explain not only which strategy is recommended, but also why it is recommended and how risky the decision is.
+## Current limitations
+
+1. The error values are reported in the committed research paper. Model training was not repeated for this documentation update.
+2. Dataset counts describe the committed 70 column master table, not a later feature table or the rows retained by each individual model.
+3. Simulated outcomes depend on assumptions and scenario settings. They are not observed race gains or a claim that an F1 team uses this system.
+4. The public repository is an academic research implementation. Live timing integration, a deployed race operations service and a validated real time product are not established by the committed files.
+
+## Next steps
+
+1. Publish the generated simulator input tables or a reproducible generation manifest.
+2. Provide a complete dependency file and portable configuration.
+3. Validate live ingestion separately from the historical research workflow.
+
+## Authors and reuse
+
+Divyansh Doshi and Amisha Sanjay Kadukar.
+
+Documentation reviewed against the public repository on 7 September 2026. Counts are taken from the named saved artifacts or directly inspected CSVs; this review did not rerun model training or validate a complete deployment. No source code licence was found in the reviewed project tree. Data and third party material may have separate terms.
